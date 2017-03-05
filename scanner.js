@@ -26,7 +26,7 @@ setTimeout(() => {
             let total = links.length;
             let done = 0;
 
-            return Promise.map(links, l => Promise.resolve($.jhead(l)).then(a => null).catch(a => l)
+            return Promise.mapSeries(links, l => Promise.resolve($.jhead(l)).then(a => null).catch(a => l)
                 .then(l => {
                     $per.text(`${++done}/${total} ~ ${Math.ceil(done * 100 / total)}%`);
                     return l;
