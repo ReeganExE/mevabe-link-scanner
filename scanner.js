@@ -28,8 +28,7 @@ setTimeout(() => {
 
             return Promise.map(links, l => Promise.resolve($.jhead(l)).then(a => null).catch(a => l)
                 .then(l => {
-                    done++
-                    $per.text(`${done}/${total} ~ ${Math.ceil(done * 100 / total)}%`);
+                    $per.text(`${++done}/${total} ~ ${Math.ceil(done * 100 / total)}%`);
                     return l;
                 }));
         })
