@@ -36,16 +36,34 @@ setTimeout(() => {
                 let tenLinks = _.chunk(links, 10);
 
                 return Promise.mapSeries(tenLinks, ten => {
-                    return Promise.map(ten, l => Promise.resolve($.jhead(l)).then(a => null)
-                        .catch(a => {
-                            $brokens.append(`<div>${l}</div>`)
-                            return l;
-                        })
-                        .then(l => {
-                            $per.text(`${++done}/${total} ~ ${Math.ceil(done * 100 / total)}%`);
-                            return l;
-                        }));
-                }).then(rs =>  { console.log('Done 100'); return rs; })
+
+                    // 10 requests work parallel
+                    return Promise
+                        .map(ten, l => Promise
+                            .resolve($.jhead(l))
+                            .then(a => null)
+                            .catch(a => {
+                                $brokens.append(`<div>${l}</div>`)
+                                return l;
+                            })
+                            .then(l => {
+                                $per.text(`${++done}/${total} ~ ${Math.ceil(done * 100 / total)}%`);
+                                return l;
+                            })
+                        );
+                })
+
+                // After a chunk, we take a rest
+                .then(rs => {
+                    $working.text('Mệt quá, nghỉ tí đã').css('background', 'red');
+
+                    return new Promise(r => {
+                        setTimeout(() => {
+                            r(rs);
+                            $working.text('Scanning...').css('background', '');
+                        }, 10000);
+                    });
+                });
             });
         })
         .then(links => _.flattenDepth(links, 2))
