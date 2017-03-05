@@ -21,6 +21,7 @@ setTimeout(() => {
 
     Promise.resolve($.get('/sitemap.xml'))
         .then(a => $(a).find('loc').map((i, l) => l.textContent))
+        .then(Array.from)
         .then(links => _.take(links, 200))
         .then(links => {
             let total = links.length;
